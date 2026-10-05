@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spring-petclinic
+  labels:
+    name: spring-petclinic
+    app.kubernetes.io/part-of: petclinic
