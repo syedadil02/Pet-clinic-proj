@@ -145,7 +145,7 @@ Open your browser at `http://localhost:8761` to verify all microservices are reg
 ---
 
 ## 5. Switching to Private AWS ECR Images (Optional)
-When Reddy provisions private ECR repositories, update the container image paths:
+When provisioning private ECR repositories, update the container image paths:
 ```bash
 # Format: <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/petclinic/spring-petclinic-<SERVICE>:latest
 ```
