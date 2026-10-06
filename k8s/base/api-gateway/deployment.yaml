@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: admin-server
+  name: api-gateway
   namespace: spring-petclinic
   labels:
-    app: admin-server
-    app.kubernetes.io/name: admin-server
+    app: api-gateway
+    app.kubernetes.io/name: api-gateway
     app.kubernetes.io/part-of: petclinic
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: admin-server
+      app: api-gateway
   template:
     metadata:
       labels:
-        app: admin-server
-        app.kubernetes.io/name: admin-server
+        app: api-gateway
+        app.kubernetes.io/name: api-gateway
     spec:
       initContainers:
         - name: wait-for-config-server
@@ -42,11 +42,11 @@ spec:
               done
               echo "Discovery server is ready!"
       containers:
-        - name: admin-server
-          image: springcommunity/spring-petclinic-admin-server:latest
+        - name: api-gateway
+          image: springcommunity/spring-petclinic-api-gateway:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 9090
+            - containerPort: 8080
               name: http
           env:
             - name: SPRING_PROFILES_ACTIVE
@@ -56,12 +56,12 @@ spec:
               memory: "256Mi"
               cpu: "100m"
             limits:
-              memory: "512Mi"
+              memory: "768Mi"
               cpu: "500m"
           startupProbe:
             httpGet:
               path: /actuator/health
-              port: 9090
+              port: 8080
             initialDelaySeconds: 15
             periodSeconds: 5
             timeoutSeconds: 5
@@ -69,14 +69,14 @@ spec:
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 9090
+              port: 8080
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 9090
+              port: 8080
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3

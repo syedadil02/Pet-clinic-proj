@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-gateway
+  name: vets-service
   namespace: spring-petclinic
   labels:
-    app: api-gateway
-    app.kubernetes.io/name: api-gateway
+    app: vets-service
+    app.kubernetes.io/name: vets-service
     app.kubernetes.io/part-of: petclinic
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-gateway
+      app: vets-service
   template:
     metadata:
       labels:
-        app: api-gateway
-        app.kubernetes.io/name: api-gateway
+        app: vets-service
+        app.kubernetes.io/name: vets-service
     spec:
       initContainers:
         - name: wait-for-config-server
@@ -42,15 +42,55 @@ spec:
               done
               echo "Discovery server is ready!"
       containers:
-        - name: api-gateway
-          image: springcommunity/spring-petclinic-api-gateway:latest
+        - name: vets-service
+          image: springcommunity/spring-petclinic-vets-service:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080
+            - containerPort: 8083
               name: http
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: "docker"
+              value: "docker,mysql"
+            - name: MYSQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: MYSQL_HOST
+            - name: MYSQL_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: MYSQL_PORT
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: MYSQL_DATABASE
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: MYSQL_PASSWORD
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: SPRING_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: MYSQL_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: MYSQL_PASSWORD
           resources:
             requests:
               memory: "256Mi"
@@ -61,7 +101,7 @@ spec:
           startupProbe:
             httpGet:
               path: /actuator/health
-              port: 8080
+              port: 8083
             initialDelaySeconds: 15
             periodSeconds: 5
             timeoutSeconds: 5
@@ -69,14 +109,14 @@ spec:
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8080
+              port: 8083
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080
+              port: 8083
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3

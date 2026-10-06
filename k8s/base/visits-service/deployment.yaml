@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: customers-service
+  name: visits-service
   namespace: spring-petclinic
   labels:
-    app: customers-service
-    app.kubernetes.io/name: customers-service
+    app: visits-service
+    app.kubernetes.io/name: visits-service
     app.kubernetes.io/part-of: petclinic
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: customers-service
+      app: visits-service
   template:
     metadata:
       labels:
-        app: customers-service
-        app.kubernetes.io/name: customers-service
+        app: visits-service
+        app.kubernetes.io/name: visits-service
     spec:
       initContainers:
         - name: wait-for-config-server
@@ -42,11 +42,11 @@ spec:
               done
               echo "Discovery server is ready!"
       containers:
-        - name: customers-service
-          image: springcommunity/spring-petclinic-customers-service:latest
+        - name: visits-service
+          image: springcommunity/spring-petclinic-visits-service:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8081
+            - containerPort: 8082
               name: http
           env:
             - name: SPRING_PROFILES_ACTIVE
@@ -77,11 +77,20 @@ spec:
                   name: petclinic-db
                   key: MYSQL_PASSWORD
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://$(MYSQL_HOST):$(MYSQL_PORT)/$(MYSQL_DATABASE)?useSSL=false&allowPublicKeyRetrieval=true"
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: SPRING_DATASOURCE_URL
             - name: SPRING_DATASOURCE_USERNAME
-              value: "$(MYSQL_USER)"
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: MYSQL_USER
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "$(MYSQL_PASSWORD)"
+              valueFrom:
+                secretKeyRef:
+                  name: petclinic-db
+                  key: MYSQL_PASSWORD
           resources:
             requests:
               memory: "256Mi"
@@ -92,7 +101,7 @@ spec:
           startupProbe:
             httpGet:
               path: /actuator/health
-              port: 8081
+              port: 8082
             initialDelaySeconds: 15
             periodSeconds: 5
             timeoutSeconds: 5
@@ -100,14 +109,14 @@ spec:
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8081
+              port: 8082
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8081
+              port: 8082
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 3

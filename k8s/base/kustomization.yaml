@@ -5,7 +5,6 @@ namespace: spring-petclinic
 
 resources:
   - 00-namespace.yaml
-  - 01-db-secret.yaml
   - config-server/deployment.yaml
   - config-server/service.yaml
   - discovery-server/deployment.yaml
