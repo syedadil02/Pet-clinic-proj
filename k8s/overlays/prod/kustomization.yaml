@@ -7,3 +7,32 @@ resources:
   - ../../base
   - db-secret.yaml
   - ingress.yaml
+
+images:
+  - name: springcommunity/spring-petclinic-admin-server
+    newName: 195874016280.dkr.ecr.eu-north-1.amazonaws.com/petclinic
+    newTag: admin-server
+
+  - name: springcommunity/spring-petclinic-api-gateway
+    newName: 195874016280.dkr.ecr.eu-north-1.amazonaws.com/petclinic
+    newTag: api-gateway
+
+  - name: springcommunity/spring-petclinic-config-server
+    newName: 195874016280.dkr.ecr.eu-north-1.amazonaws.com/petclinic
+    newTag: config-server
+
+  - name: springcommunity/spring-petclinic-customers-service
+    newName: 195874016280.dkr.ecr.eu-north-1.amazonaws.com/petclinic
+    newTag: customers-service
+
+  - name: springcommunity/spring-petclinic-discovery-server
+    newName: 195874016280.dkr.ecr.eu-north-1.amazonaws.com/petclinic
+    newTag: discovery-server
+
+  - name: springcommunity/spring-petclinic-vets-service
+    newName: 195874016280.dkr.ecr.eu-north-1.amazonaws.com/petclinic
+    newTag: vets-service
+
+  - name: springcommunity/spring-petclinic-visits-service
+    newName: 195874016280.dkr.ecr.eu-north-1.amazonaws.com/petclinic
+    newTag: visits-service

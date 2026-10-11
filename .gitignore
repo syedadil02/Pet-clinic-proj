@@ -59,3 +59,10 @@ package-lock.json
 *.bak
 *.log
 tmp/
+
+# Local Kubernetes executable
+/kubectl
+
+# Terraform state backups and local state artifacts
+*.tfstate.*
+terraform.tfstate*
